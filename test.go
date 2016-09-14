@@ -42,6 +42,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	var message string // Entities
 	var messageval string // Asset holdings
 	var err error
+	//var terr error
 
 	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 2")
@@ -57,6 +58,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 	// Write the state to the ledger
 	err = stub.PutState(message, []byte(messageval))
+	//terr = CreateTable("Message", columnDefinitions []*ColumnDefinition) 
 	if err != nil {
 		return nil, err
 	}
@@ -95,20 +97,35 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	}
 
 	message = args[0]
+	size := blockchain.getSize()
+	for i := uint64(0); i < size; i++ {
+		block, blockErr := blockchain.getBlock(i)
+		if blockErr != nil {
+			return ""
+		}
+		buffer.WriteString("\n----------<block #")
+		buffer.WriteString(strconv.FormatUint(i, 10))
+		buffer.WriteString(">----------\n")
+		buffer.WriteString(stub.GetState(message))
+		buffer.WriteString("\n----------<\\block #")
+		buffer.WriteString(strconv.FormatUint(i, 10))
+		buffer.WriteString(">----------\n")
+}
 
 	// Get the state from the ledger
 	Avalbytes, err := stub.GetState(message)
+
 	if err != nil {
-		jsonResp := "{\"Error\":\"Failed to get state for " + message + "\"}"
+		jsonResp := "{\"Error\":\"Failed to get state for " + buffer.String() + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
 	if Avalbytes == nil {
-		jsonResp := "{\"Error\":\"Nil amount for " + message + "\"}"
+		jsonResp := "{\"Error\":\"Nil amount for " + buffer.String() + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
-	jsonResp := "{\"Name\":\"" + message + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
+	jsonResp := "{\"Name\":\"" + message + "\",\"Amount\":\"" + string(buffer.String()) + "\"}"
 	fmt.Printf("Query Response:%s\n", jsonResp)
 	return Avalbytes, nil
 }
