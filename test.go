@@ -102,16 +102,16 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	Avalbytes, err := stub.GetState(message)
 
 	if err != nil {
-		jsonResp := "{\"Error\":\"Failed to get state for " + buffer.String() + "\"}"
+		jsonResp := "{\"Error\":\"Failed to get state for " + message + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
 	if Avalbytes == nil {
-		jsonResp := "{\"Error\":\"Nil amount for " + buffer.String() + "\"}"
+		jsonResp := "{\"Error\":\"Nil amount for " + message + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
-	jsonResp := "{\"Name\":\"" + message + "\",\"Amount\":\"" + string(buffer.String()) + "\"}"
+	jsonResp := "{\"Name\":\"" + message + "\",\"Amount\":\"" + message + "\"}"
 	fmt.Printf("Query Response:%s\n", jsonResp)
 	return Avalbytes, nil
 }
