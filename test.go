@@ -1,12 +1,9 @@
 /*
 Copyright IBM Corp. 2016 All Rights Reserved.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
 		 http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +26,10 @@ import (
 )
 
 // SimpleChaincode example simple Chaincode implementation
-type SimpleChaincode struct {
+type SimpleChaincode struct { 
+ var message string // Entities
+ var messageval string // Asset holdings
+ var query[] string // Asset holdings
    
 }
 
@@ -37,10 +37,9 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
-// Transaction makes payment of X units from A to B
+//
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	var message string // Entities
-	var messageval string // Asset holdings
+	
 	var err error
 	//var terr error
 
@@ -89,7 +88,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	if function != "query" {
 		return nil, errors.New("Invalid query function name. Expecting \"query\"")
 	}
-	var message string // Entities
 	var err error
 
 	if len(args) != 1 {
@@ -99,21 +97,21 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	message = args[0]
 
 	// Get the state from the ledger
-	Avalbytes, err := stub.GetState(message)
+	query, err := stub.GetState(message)
 
 	if err != nil {
-		jsonResp := "{\"Error\":\"Failed to get state for " + message + "\"}"
+		jsonResp := "{\"Error\":\"Failed to get state for " + query + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
-	if Avalbytes == nil {
-		jsonResp := "{\"Error\":\"Nil amount for " + message + "\"}"
+	if query == nil {
+		jsonResp := "{\"Error\":\"Nil amount for " + query + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
-	jsonResp := "{\"Name\":\"" + message + "\",\"Amount\":\"" + message + "\"}"
+	jsonResp := "{\"Name\":\"" + query + "\",\"Amount\":\"" + query + "\"}"
 	fmt.Printf("Query Response:%s\n", jsonResp)
-	return Avalbytes, nil
+	return query, nil
 }
 
 func main() {
@@ -122,3 +120,5 @@ func main() {
 		fmt.Printf("Error starting Simple chaincode: %s", err)
 	}
 }
+Contact GitHub API Training Shop Blog About
+© 2016 GitHub, Inc. Terms Privacy Security Status Help
